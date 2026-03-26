@@ -1,0 +1,35 @@
+# Dependencies
+/node_modules
+
+# Build output
+/dist
+/*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Runtime files
+/uploads/*
+!/uploads/.gitkeep
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Coverage
+/coverage
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
