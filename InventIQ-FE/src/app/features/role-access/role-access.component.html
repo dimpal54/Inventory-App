@@ -1,0 +1,61 @@
+<div class="role-access-page">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Admin Only</div>
+      <h1>Role Access Control</h1>
+      <p>Use this page to understand exactly what each role can do inside InventIQ.</p>
+    </div>
+  </section>
+
+  <div class="role-grid">
+    @for (role of roles; track role.name) {
+    <mat-card class="role-card">
+      <div class="role-header">
+        <div>
+          <h2>{{ role.name }}</h2>
+          <p>{{ role.summary }}</p>
+        </div>
+        <mat-icon>verified_user</mat-icon>
+      </div>
+
+      <div class="access-list">
+        @for (item of role.access; track item) {
+        <div class="access-item">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ item }}</span>
+        </div>
+        }
+      </div>
+    </mat-card>
+    }
+  </div>
+
+  <mat-card class="matrix-card">
+    <div class="matrix-header">
+      <div>
+        <h2>Permission Matrix</h2>
+        <p>Add, edit, delete, and role assignment by role.</p>
+      </div>
+    </div>
+
+    <div class="matrix-table">
+      <div class="matrix-row matrix-head">
+        <div>Permission</div>
+        <div>Admin</div>
+        <div>Manager</div>
+        <div>Supervisor</div>
+        <div>User</div>
+      </div>
+
+      @for (row of permissionMatrix; track row.label) {
+      <div class="matrix-row">
+        <div class="permission-label">{{ row.label }}</div>
+        <div>{{ row.admin ? 'Yes' : 'No' }}</div>
+        <div>{{ row.manager ? 'Yes' : 'No' }}</div>
+        <div>{{ row.supervisor ? 'Yes' : 'No' }}</div>
+        <div>{{ row.user ? 'Yes' : 'No' }}</div>
+      </div>
+      }
+    </div>
+  </mat-card>
+</div>

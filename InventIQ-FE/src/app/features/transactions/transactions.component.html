@@ -1,0 +1,26 @@
+<div class="transactions-page">
+  <mat-card>
+    <mat-card-header><mat-card-title>Inventory Transactions</mat-card-title></mat-card-header>
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="loading"><mat-spinner diameter="36"></mat-spinner><span>Loading transactions...</span></div>
+      } @else {
+        <table mat-table [dataSource]="transactions()" class="transactions-table">
+          <ng-container matColumnDef="product"><th mat-header-cell *matHeaderCellDef>Product</th><td mat-cell *matCellDef="let t">{{ t.product?.name || t.productId }}</td></ng-container>
+          <ng-container matColumnDef="type"><th mat-header-cell *matHeaderCellDef>Type</th><td mat-cell *matCellDef="let t">{{ t.type }}</td></ng-container>
+          <ng-container matColumnDef="quantity"><th mat-header-cell *matHeaderCellDef>Qty</th><td mat-cell *matCellDef="let t">{{ t.quantity }}</td></ng-container>
+          <ng-container matColumnDef="previousQuantity"><th mat-header-cell *matHeaderCellDef>Prev</th><td mat-cell *matCellDef="let t">{{ t.previousQuantity }}</td></ng-container>
+          <ng-container matColumnDef="newQuantity"><th mat-header-cell *matHeaderCellDef>New</th><td mat-cell *matCellDef="let t">{{ t.newQuantity }}</td></ng-container>
+          <ng-container matColumnDef="createdAt"><th mat-header-cell *matHeaderCellDef>Date</th><td mat-cell *matCellDef="let t">{{ t.createdAt | date:'short' }}</td></ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        @if (transactions().length === 0) {
+          <div class="no-data">No inventory transactions available</div>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,107 @@
+<div class="dashboard-container">
+  <div class="welcome-section">
+    <h1>Welcome back, {{ currentUser()?.name || 'User' }}!</h1>
+    <p>Manage your inventory with AI-powered insights</p>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <mat-card class="summary-card" (click)="navigateTo('/categories')" (keydown.enter)="navigateTo('/categories')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>category</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>{{ totalCategories() }}</h3>
+            <p>Categories</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card" (click)="navigateTo('/suppliers')" (keydown.enter)="navigateTo('/suppliers')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>business</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>{{ totalSuppliers() }}</h3>
+            <p>Suppliers</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card" (click)="navigateTo('/products')" (keydown.enter)="navigateTo('/products')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>inventory</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>{{ totalProducts() }}</h3>
+            <p>Products</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card warning" (click)="navigateTo('/low-stock')" (keydown.enter)="navigateTo('/low-stock')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>{{ lowStockCount() }}</h3>
+            <p>Low Stock</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card error" (click)="navigateTo('/out-of-stock')" (keydown.enter)="navigateTo('/out-of-stock')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>error</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>{{ outOfStockCount() }}</h3>
+            <p>Out of Stock</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card" (click)="navigateTo('/transactions')" (keydown.enter)="navigateTo('/transactions')" tabindex="0">
+      <mat-card-content>
+        <div class="card-content">
+          <div class="card-icon">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <div class="card-info">
+            <h3>View</h3>
+            <p>Transactions</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- API Response -->
+  @if (apiResponse()) {
+    <mat-card class="response-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>api</mat-icon>
+        <mat-card-title>API Response</mat-card-title>
+        <mat-card-subtitle>Last API call result</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <pre class="response-json">{{ apiResponse() | json }}</pre>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

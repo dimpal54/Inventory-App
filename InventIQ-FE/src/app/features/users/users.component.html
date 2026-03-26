@@ -1,0 +1,102 @@
+<div class="users-page">
+  <section class="users-hero">
+    <div>
+      <div class="eyebrow">Admin Control</div>
+      <h1>Users And Roles</h1>
+      <p>Create users, edit access, delete accounts, and assign roles from one place.</p>
+    </div>
+  </section>
+
+  <div class="users-grid">
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>{{ isEditing() ? 'Edit User' : 'Add User' }}</mat-card-title>
+        <mat-card-subtitle>Assign role and account status</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="userForm" class="user-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ isEditing() ? 'New Password (Optional)' : 'Password' }}</mat-label>
+            <input matInput type="password" formControlName="password" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              @for (role of roles; track role) {
+              <mat-option [value]="role">{{ role | titlecase }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-slide-toggle formControlName="isActive">Active User</mat-slide-toggle>
+
+          <div class="form-actions">
+            <button mat-stroked-button type="button" (click)="resetForm()">Clear</button>
+            <button mat-raised-button color="primary" type="button" (click)="saveUser()">
+              {{ isEditing() ? 'Update User' : 'Create User' }}
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="list-card">
+      <mat-card-header>
+        <mat-card-title>Users</mat-card-title>
+        <mat-card-subtitle>Manage role assignments and account status</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (isLoading()) {
+        <div class="loading-state">
+          <mat-spinner diameter="36"></mat-spinner>
+          <p>Loading users...</p>
+        </div>
+        } @else {
+        <div class="users-list">
+          @for (user of users(); track user.id || user._id || user.email) {
+          <div class="user-item">
+            <div class="user-main">
+              <div class="user-title-row">
+                <div class="user-name">{{ user.name }}</div>
+                <span class="role-pill">{{ user.role | titlecase }}</span>
+              </div>
+              <div class="user-email">{{ user.email }}</div>
+              <div class="user-meta">
+                <span>{{ user.isActive ? 'Active' : 'Inactive' }}</span>
+                <span>{{ user.createdAt ? (user.createdAt | date:'mediumDate') : '-' }}</span>
+              </div>
+            </div>
+            <div class="user-actions">
+              <button mat-icon-button color="primary" (click)="editUser(user)" aria-label="Edit User">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteUser(user)" aria-label="Delete User">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+
+        @if (users().length === 0) {
+        <div class="empty-state">
+          <mat-icon>group</mat-icon>
+          <p>No users found yet.</p>
+        </div>
+        }
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

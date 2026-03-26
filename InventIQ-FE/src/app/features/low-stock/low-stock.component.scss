@@ -1,0 +1,5 @@
+.low-stock-page { padding: 20px; max-width: 1100px; margin: 0 auto; }
+.loading { display: flex; align-items: center; gap: 10px; padding: 14px; }
+.low-stock-table { width: 100%; border-collapse: collapse; }
+.low-stock-table th, .low-stock-table td { padding: 10px; border-bottom: 1px solid #e0e0e0; }
+.no-data { text-align: center; padding: 16px; color: rgba(0,0,0,0.65); }

@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>{{ isEdit() ? 'Edit Category' : 'Add Category' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" class="category-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category Name</mat-label>
+      <input matInput formControlName="name" placeholder="Enter category name">
+      <mat-error *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+        <span *ngIf="categoryForm.get('name')?.hasError('required')">Name is required</span>
+        <span *ngIf="categoryForm.get('name')?.hasError('minlength')">Name must be at least 2 characters</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description (Optional)</mat-label>
+      <textarea matInput formControlName="description" placeholder="Enter category description" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button
+          color="primary"
+          (click)="onSubmit()"
+          [disabled]="categoryForm.invalid || isLoading()">
+    @if (isLoading()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    } @else {
+      {{ isEdit() ? 'Update' : 'Create' }}
+    }
+  </button>
+</mat-dialog-actions>

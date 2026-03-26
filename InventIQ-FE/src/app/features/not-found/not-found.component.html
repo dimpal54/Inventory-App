@@ -1,0 +1,18 @@
+<div class="notfound-page">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>404 — Page Not Found</mat-card-title>
+      <mat-card-subtitle>Oops! We can't find that page.</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p>The address <strong>{{ router.url }}</strong> is not available.</p>
+      <p>Check that the URL is correct or use the button below to return home.</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" routerLink="/dashboard">
+        <mat-icon>home</mat-icon>
+        Go to Dashboard
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

@@ -1,0 +1,81 @@
+<div class="login-container">
+    <div class="login-wrapper">
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <div class="brand-section">
+                <h1 class="app-title">InventIQ</h1>
+                <p class="app-subtitle">AI-Powered Inventory Management</p>
+            </div>
+            <div class="features-section">
+                <div class="feature-item">
+                    <mat-icon>analytics</mat-icon>
+                    <span>Smart Analytics & Insights</span>
+                </div>
+                <div class="feature-item">
+                    <mat-icon>inventory</mat-icon>
+                    <span>Real-time Inventory Tracking</span>
+                </div>
+                <div class="feature-item">
+                    <mat-icon>security</mat-icon>
+                    <span>Secure & Scalable Platform</span>
+                </div>
+                <div class="feature-item">
+                    <mat-icon>auto_awesome</mat-icon>
+                    <span>AI-Driven Optimization</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="right-panel">
+            <mat-card class="login-card">
+                <mat-card-header>
+                    <mat-card-title>Welcome Back</mat-card-title>
+                    <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content>
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Email</mat-label>
+                            <input matInput type="email" formControlName="email" placeholder="admin@example.com">
+                            <mat-icon matSuffix>email</mat-icon>
+                            <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                                <span *ngIf="loginForm.get('email')?.hasError('required')">Email is required</span>
+                                <span *ngIf="loginForm.get('email')?.hasError('email')">Please enter a valid
+                                    email</span>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Password</mat-label>
+                            <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password">
+                            <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+                                <mat-icon>{{hidePassword() ? 'visibility_off' : 'visibility'}}</mat-icon>
+                            </button>
+                            <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                                <span *ngIf="loginForm.get('password')?.hasError('required')">Password is
+                                    required</span>
+                                <span *ngIf="loginForm.get('password')?.hasError('minlength')">Password must be at least
+                                    6 characters</span>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <div class="form-options">
+                            <mat-checkbox formControlName="rememberMe">Remember me</mat-checkbox>
+                        </div>
+
+                        <button mat-raised-button color="primary" type="submit" class="login-button"
+                            [disabled]="loginForm.invalid || isLoading()">
+                            <span *ngIf="!isLoading()">Sign In</span>
+                            <span *ngIf="isLoading()" class="loading-content">
+                                <mat-spinner diameter="20"></mat-spinner>
+                                Signing in...
+                            </span>
+                        </button>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+</div>

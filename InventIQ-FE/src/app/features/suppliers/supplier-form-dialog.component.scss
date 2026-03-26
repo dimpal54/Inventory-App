@@ -1,0 +1,40 @@
+.dialog-container {
+  min-width: 400px;
+  max-width: 600px;
+}
+
+.supplier-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 0 0 0;
+  margin-bottom: 0;
+
+  button {
+    margin-left: 8px;
+  }
+}
+
+mat-spinner {
+  margin-right: 8px;
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .dialog-container {
+    min-width: 300px;
+    max-width: 90vw;
+  }
+
+  .supplier-form {
+    gap: 12px;
+  }
+}

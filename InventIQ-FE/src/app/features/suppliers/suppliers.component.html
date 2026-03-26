@@ -1,0 +1,78 @@
+<div class="suppliers-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>Suppliers Management</mat-card-title>
+      <mat-card-subtitle>Manage product suppliers</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      @if (canManageInventory()) {
+      <button mat-raised-button color="primary" (click)="openAddDialog()">
+        <mat-icon>add</mat-icon>
+        Add Supplier
+      </button>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Loading suppliers...</p>
+        </div>
+      } @else {
+        <table mat-table [dataSource]="suppliers()" class="suppliers-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let supplier">{{ supplier.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let supplier">{{ supplier.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef>Phone</th>
+            <td mat-cell *matCellDef="let supplier">{{ supplier.phone || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let supplier">
+              {{ supplier.createdAt ? (supplier.createdAt | date:'short') : '-' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let supplier">
+              <button mat-icon-button color="primary" (click)="openEditDialog(supplier)" aria-label="Edit">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteSupplier(supplier)" aria-label="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        @if (suppliers().length === 0) {
+          <div class="no-data">
+            <mat-icon>business</mat-icon>
+            <p>No suppliers found</p>
+            @if (canManageInventory()) {
+            <button mat-stroked-button (click)="openAddDialog()">
+              Add First Supplier
+            </button>
+            }
+          </div>
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

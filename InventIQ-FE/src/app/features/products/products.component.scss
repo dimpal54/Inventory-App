@@ -1,0 +1,7 @@
+.products-container { padding: 22px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.header-card mat-card-content { display: flex; justify-content: flex-end; }
+.table-card mat-card-content { padding: 0; }
+.full-table { width: 100%; }
+.loading { padding: 40px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+.no-data { padding: 40px; text-align: center; }
+@media (max-width: 768px) { .products-container { padding: 12px; } .header-card mat-card-content { justify-content: center; } }

@@ -1,0 +1,48 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ isEdit() ? 'Edit Supplier' : 'Add New Supplier' }}</h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="supplierForm" class="supplier-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Supplier Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter supplier name">
+        <mat-error *ngIf="supplierForm.get('name')?.invalid && supplierForm.get('name')?.touched">
+          {{ getErrorMessage('name') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email Address</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter email address">
+        <mat-error *ngIf="supplierForm.get('email')?.invalid && supplierForm.get('email')?.touched">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phone" placeholder="Enter phone number (optional)">
+        <mat-hint>Include country code if international</mat-hint>
+        <mat-error *ngIf="supplierForm.get('phone')?.invalid && supplierForm.get('phone')?.touched">
+          {{ getErrorMessage('phone') }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Address</mat-label>
+        <textarea matInput formControlName="address" placeholder="Enter supplier address (optional)" rows="3"></textarea>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading()">
+      @if (isLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        {{ isEdit() ? 'Update' : 'Create' }}
+      }
+    </button>
+  </mat-dialog-actions>
+</div>

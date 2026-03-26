@@ -1,0 +1,610 @@
+<div class="ai-assistant-page">
+    <!-- Hero Header -->
+    <header class="hero-header">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>AI Assistant</h1>
+                <p>Intelligent inventory management powered by AI</p>
+            </div>
+            <div class="hero-icon-section">
+                <mat-icon class="hero-icon">smart_toy</mat-icon>
+                <span class="status-badge">AI Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content - Full Width Chat -->
+    <main class="main-content">
+        <div class="chat-panel">
+            <div class="panel-header">
+                <h2>Chat with AI</h2>
+                <p class="panel-subtitle">Get instant help with your inventory or analyze images</p>
+            </div>
+
+            <mat-card class="panel-card">
+                <!-- Messages Scroll Container -->
+                <div class="messages-scroll-container" #messagesScroll>
+                    @if (showWelcome && messages.length === 0) {
+                    <div class="welcome-card">
+                        <mat-icon class="welcome-icon">waving_hand</mat-icon>
+                        <h3>Welcome to AI Assistant</h3>
+                        <p>I'm here to help you manage your inventory. Ask me anything or upload images to add products.</p>
+                        @if (!canUseAiWriteActions()) {
+                        <p>You have view-only AI access. You can ask for inventory data, but only Admin and Manager can add, edit, or delete items.</p>
+                        }
+
+                        <div class="suggestion-cards">
+                            @for (suggestion of suggestionPrompts; track suggestion.title) {
+                            <button class="suggestion-button" (click)="sendQuickPrompt(suggestion.prompt)"
+                                mat-stroked-button>
+                                <mat-icon>{{ suggestion.icon }}</mat-icon>
+                                <div class="suggestion-text">
+                                    <div class="suggestion-title">{{ suggestion.title }}</div>
+                                </div>
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    @for (message of messages; track trackByMessageId($index, message)) {
+                    <div class="message-wrapper" [class.user-msg]="message.sender === 'user'"
+                        [class.assistant-msg]="message.sender === 'assistant'">
+                        <!-- User Message -->
+                        @if (message.sender === 'user') {
+                        <div class="message-bubble user-bubble">
+                            <div class="message-text">{{ message.text }}</div>
+                            @if (message.imageUrl) {
+                            <img [src]="message.imageUrl" alt="Uploaded" class="message-image">
+                            }
+                        </div>
+                        } @else {
+                        <!-- Assistant Message -->
+                        <div class="message-bubble assistant-bubble" [class.error]="message.error">
+                            <div class="message-header">
+                                <mat-icon class="message-avatar">smart_toy</mat-icon>
+                                <span class="message-time">{{ message.timestamp | date:'short' }}</span>
+                            </div>
+
+                            @if (message.loading) {
+                            <div class="loading-state">
+                                <div class="typing-indicator">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                                <span class="loading-text">AI is thinking...</span>
+                            </div>
+                            } @else {
+                            <!-- Regular message text -->
+                            @if (!message.confirmationDetails) {
+                            <div class="message-text">{{ message.text }}</div>
+                            }
+
+                            <!-- Confirmation Card (for image analysis results) -->
+                            @if (message.confirmationDetails) {
+                            <div class="confirmation-card">
+                                <div class="confirmation-header">{{ message.text }}</div>
+                                <div class="confirmation-content">
+                                    @if (message.confirmationDetails.entityType === 'product') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Product Name">Product Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['brand']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Brand">Brand</div>
+                                            <span class="value">{{ message.confirmationDetails.data['brand'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['category']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Category">Category</div>
+                                            <span class="value">{{ message.confirmationDetails.data['category'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['barcode']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Barcode">Barcode</div>
+                                            <span class="value">{{ message.confirmationDetails.data['barcode'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['unit']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Unit">Unit</div>
+                                            <span class="value">{{ message.confirmationDetails.data['unit'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['description']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label" aria-label="Description">Description</div>
+                                            <span class="value">{{ message.confirmationDetails.data['description'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (message.confirmationDetails.entityType === 'category') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label" aria-label="Category Name">Category Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['description']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label" aria-label="Description">Description</div>
+                                            <span class="value">{{ message.confirmationDetails.data['description'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (message.confirmationDetails.entityType === 'supplier') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label" aria-label="Supplier Name">Supplier Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['phone']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Phone">Phone</div>
+                                            <span class="value">{{ message.confirmationDetails.data['phone'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['email']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label" aria-label="Email">Email</div>
+                                            <span class="value">{{ message.confirmationDetails.data['email'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['address']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label" aria-label="Address">Address</div>
+                                            <span class="value">{{ message.confirmationDetails.data['address'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (message.confirmationDetails.confidenceNote) {
+                                    <div class="confidence-note">
+                                        <mat-icon>info</mat-icon>
+                                        <span>{{ message.confirmationDetails.confidenceNote }}</span>
+                                    </div>
+                                    }
+
+                                    @if (getConfirmationItems(message).length > 1) {
+                                    <div class="data-card batch-preview-card">
+                                        <h4>Items To Add ({{ getConfirmationItems(message).length }})</h4>
+
+                                        @if (message.confirmationDetails.entityType === 'category') {
+                                        <div class="categories-list">
+                                            @for (item of getConfirmationItems(message); track $index) {
+                                            <div class="category-item">
+                                                <div class="category-name">{{ item.name || 'Unnamed category' }}</div>
+                                                @if (item.description) {
+                                                <div class="category-description">{{ item.description }}</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        }
+
+                                        @if (message.confirmationDetails.entityType === 'supplier') {
+                                        <div class="suppliers-list">
+                                            @for (item of getConfirmationItems(message); track $index) {
+                                            <div class="supplier-item">
+                                                <div class="supplier-header">
+                                                    <div class="supplier-name">{{ item.name || 'Unnamed supplier' }}</div>
+                                                    @if (item.phone) {
+                                                    <div class="supplier-contact">{{ item.phone }}</div>
+                                                    }
+                                                </div>
+                                                @if (item.email) {
+                                                <div class="supplier-email">{{ item.email }}</div>
+                                                }
+                                                @if (item.address) {
+                                                <div class="supplier-address">{{ item.address }}</div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                        }
+
+                                        @if (message.confirmationDetails.entityType === 'product') {
+                                        <div class="table-wrapper">
+                                            <table class="simple-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Category</th>
+                                                        <th>Supplier</th>
+                                                        <th>SKU</th>
+                                                        <th>Quantity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (item of getConfirmationItems(message); track $index) {
+                                                    <tr>
+                                                        <td>{{ item.name || '-' }}</td>
+                                                        <td>{{ item.category || '-' }}</td>
+                                                        <td>{{ item.supplier || '-' }}</td>
+                                                        <td>{{ item.sku || '-' }}</td>
+                                                        <td>{{ item.quantity || '-' }}</td>
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Missing Fields Form (Collect All At Once) -->
+                            @if (message.action === 'missing_fields' && missingFieldsState === 'collecting_fields') {
+                            <div class="missing-fields-form-card">
+                                <form [formGroup]="missingFieldsForm" (ngSubmit)="submitMissingFieldsForm()" class="fields-form">
+                                    <div class="form-fields">
+                                        @for (field of missingFields; track field) {
+                                        <mat-form-field appearance="outline" class="form-field">
+                                            <mat-label>{{ field | titlecase }}</mat-label>
+                                            <input matInput 
+                                                   [formControlName]="field"
+                                                   [placeholder]="'Enter ' + (field | lowercase)"
+                                                   autocomplete="off">
+                                            @if (missingFieldsForm.get(field)?.hasError('required') && missingFieldsForm.get(field)?.touched) {
+                                            <mat-error>{{ field | titlecase }} is required</mat-error>
+                                            }
+                                        </mat-form-field>
+                                        }
+                                    </div>
+                                    <div class="form-actions">
+                                        <button mat-stroked-button type="button" (click)="cancelMissingFieldsForm()" class="cancel-btn">
+                                            <mat-icon>close</mat-icon>
+                                            Cancel
+                                        </button>
+                                        <button mat-raised-button color="primary" type="submit" [disabled]="missingFieldsForm.invalid" class="submit-btn">
+                                            <mat-icon>check</mat-icon>
+                                            Review Information
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            }
+
+                            <!-- Confirmation Card - Review Before Creating -->
+                            @if (message.confirmationDetails?.isFormReview && missingFieldsState === 'reviewing_data') {
+                            <div class="confirmation-card review-card">
+                                <div class="confirmation-header">
+                                    <mat-icon class="review-icon">preview</mat-icon>
+                                    <span>Please confirm the following information:</span>
+                                </div>
+                                <div class="confirmation-content">
+                                    @if (message.confirmationDetails.entityType === 'product') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Product Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['brand']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Brand</div>
+                                            <span class="value">{{ message.confirmationDetails.data['brand'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['category']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Category</div>
+                                            <span class="value">{{ message.confirmationDetails.data['category'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['unit']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Unit</div>
+                                            <span class="value">{{ message.confirmationDetails.data['unit'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['description']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label">Description</div>
+                                            <span class="value">{{ message.confirmationDetails.data['description'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (message.confirmationDetails.entityType === 'category') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label">Category Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['description']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label">Description</div>
+                                            <span class="value">{{ message.confirmationDetails.data['description'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+
+                                    @if (message.confirmationDetails.entityType === 'supplier') {
+                                    <div class="confirmation-grid">
+                                        @if (message.confirmationDetails.data['name']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label">Supplier Name</div>
+                                            <span class="value">{{ message.confirmationDetails.data['name'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['phone']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Phone</div>
+                                            <span class="value">{{ message.confirmationDetails.data['phone'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['email']) {
+                                        <div class="confirmation-item">
+                                            <div class="confirmation-label">Email</div>
+                                            <span class="value">{{ message.confirmationDetails.data['email'] }}</span>
+                                        </div>
+                                        }
+                                        @if (message.confirmationDetails.data['address']) {
+                                        <div class="confirmation-item full-width">
+                                            <div class="confirmation-label">Address</div>
+                                            <span class="value">{{ message.confirmationDetails.data['address'] }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                                <div class="confirmation-actions">
+                                    <button mat-stroked-button (click)="cancelMissingFieldsForm()" class="deny-btn">
+                                        <mat-icon>close</mat-icon>
+                                        Changes Needed
+                                    </button>
+                                    <button mat-raised-button color="accent" (click)="confirmCreateEntity()" class="confirm-btn">
+                                        <mat-icon>done</mat-icon>
+                                        Create Now
+                                    </button>
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Get Products / Search Products with detailed info -->
+                            @if ((message.action === 'get_products' || message.action === 'search_products' || 
+                                 message.action === 'low_stock') && message.data?.products && 
+                                 message.data.products.length > 0) {
+                            <div class="data-card products-card">
+                                <h4>Products ({{ message.data.products.length }})</h4>
+                                <div class="table-wrapper">
+                                    <table class="simple-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Product Name</th>
+                                                <th>Brand</th>
+                                                <th>Category</th>
+                                                <th>Unit</th>
+                                                @if (message.data.products[0].quantity !== undefined) {
+                                                <th>Quantity</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (product of message.data.products; track product.id) {
+                                            <tr>
+                                                <td>{{ product.name }}</td>
+                                                <td>{{ product.brand || '–' }}</td>
+                                                <td>{{ product.category || '–' }}</td>
+                                                <td>{{ product.unit || '–' }}</td>
+                                                @if (product.quantity !== undefined) {
+                                                <td [class.low-stock]="product.quantity < 10">{{ product.quantity }}</td>
+                                                }
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Get Categories -->
+                            @if ((message.action === 'get_categories' || message.action === 'list_categories') && 
+                                 message.data?.categories && message.data.categories.length > 0) {
+                            <div class="data-card categories-card">
+                                <h4>Categories ({{ message.data.categories.length }})</h4>
+                                <div class="categories-list">
+                                    @for (category of message.data.categories; track category.id) {
+                                    <div class="category-item">
+                                        <div class="category-name">{{ category.name }}</div>
+                                        @if (category.description) {
+                                        <div class="category-description">{{ category.description }}</div>
+                                        }
+                                        @if (category.productCount !== undefined) {
+                                        <div class="category-meta">{{ category.productCount }} products</div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Get Suppliers -->
+                            @if ((message.action === 'get_suppliers' || message.action === 'list_suppliers') && 
+                                 message.data?.suppliers && message.data.suppliers.length > 0) {
+                            <div class="data-card suppliers-card">
+                                <h4>Suppliers ({{ message.data.suppliers.length }})</h4>
+                                <div class="suppliers-list">
+                                    @for (supplier of message.data.suppliers; track supplier.id) {
+                                    <div class="supplier-item">
+                                        <div class="supplier-header">
+                                            <div class="supplier-name">{{ supplier.name }}</div>
+                                            @if (supplier.phone) {
+                                            <div class="supplier-contact">📞 {{ supplier.phone }}</div>
+                                            }
+                                        </div>
+                                        @if (supplier.email) {
+                                        <div class="supplier-email">✉️ {{ supplier.email }}</div>
+                                        }
+                                        @if (supplier.address) {
+                                        <div class="supplier-address">📍 {{ supplier.address }}</div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Inventory Summary -->
+                            @if (message.action === 'inventory_summary' && message.data) {
+                            <div class="data-card summary-card">
+                                <h4>Inventory Summary</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric">
+                                        <div class="metric-icon">📦</div>
+                                        <div class="metric-value">{{ message.data.totalProducts || 0 }}</div>
+                                        <div class="metric-label">Total Products</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-icon">🏷️</div>
+                                        <div class="metric-value">{{ message.data.totalCategories || 0 }}</div>
+                                        <div class="metric-label">Categories</div>
+                                    </div>
+                                    <div class="metric">
+                                        <div class="metric-icon">🤝</div>
+                                        <div class="metric-value">{{ message.data.totalSuppliers || 0 }}</div>
+                                        <div class="metric-label">Suppliers</div>
+                                    </div>
+                                    <div class="metric warning">
+                                        <div class="metric-icon">⚠️</div>
+                                        <div class="metric-value">{{ message.data.lowStockCount || 0 }}</div>
+                                        <div class="metric-label">Low Stock</div>
+                                    </div>
+                                    <div class="metric danger">
+                                        <div class="metric-icon">❌</div>
+                                        <div class="metric-value">{{ message.data.outOfStockCount || 0 }}</div>
+                                        <div class="metric-label">Out of Stock</div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+
+                            <!-- Action: Create Success -->
+                            @if ((message.action === 'create_product' || message.action === 'create_category' ||
+                            message.action === 'create_supplier' || message.action === 'update_product' ||
+                            message.action === 'update_category' || message.action === 'update_supplier' ||
+                            message.action === 'delete_product' || message.action === 'delete_category' ||
+                            message.action === 'delete_supplier') && !message.loading) {
+                            <div class="data-card success-card">
+                                <mat-icon class="success-icon">check_circle</mat-icon>
+                                <span class="success-text">{{ message.text }}</span>
+                            </div>
+
+                            @if (getCreatedItems(message).length > 0) {
+                            <div class="data-card batch-preview-card">
+                                <h4>Added Items ({{ getCreatedItems(message).length }})</h4>
+
+                                @if (message.action === 'create_category' || message.action === 'update_category') {
+                                <div class="categories-list">
+                                    @for (item of getCreatedItems(message); track item._id || item.id || $index) {
+                                    <div class="category-item">
+                                        <div class="category-name">{{ item.name || 'Unnamed category' }}</div>
+                                        @if (item.description) {
+                                        <div class="category-description">{{ item.description }}</div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                                }
+
+                                @if (message.action === 'create_supplier' || message.action === 'update_supplier') {
+                                <div class="suppliers-list">
+                                    @for (item of getCreatedItems(message); track item._id || item.id || $index) {
+                                    <div class="supplier-item">
+                                        <div class="supplier-header">
+                                            <div class="supplier-name">{{ item.name || 'Unnamed supplier' }}</div>
+                                            @if (item.phone) {
+                                            <div class="supplier-contact">{{ item.phone }}</div>
+                                            }
+                                        </div>
+                                        @if (item.email) {
+                                        <div class="supplier-email">{{ item.email }}</div>
+                                        }
+                                        @if (item.address) {
+                                        <div class="supplier-address">{{ item.address }}</div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                                }
+
+                                @if (message.action === 'create_product' || message.action === 'update_product') {
+                                <div class="table-wrapper">
+                                    <table class="simple-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>SKU</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (item of getCreatedItems(message); track item._id || item.id || $index) {
+                                            <tr>
+                                                <td>{{ item.name || '-' }}</td>
+                                                <td>{{ item.sku || '-' }}</td>
+                                                <td>{{ item.quantity ?? '-' }}</td>
+                                                <td>{{ item.sellingPrice ?? '-' }}</td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                }
+                            </div>
+                            }
+                            }
+                            }
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Sticky Input Section -->
+                <div class="chat-input-sticky">
+                    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="chat-form">
+                        <button type="button" mat-icon-button (click)="triggerImageUpload()" 
+                            class="image-upload-button" matTooltip="Upload image, PDF, or Excel file" [disabled]="!canUseAiWriteActions()">
+                            <mat-icon>image</mat-icon>
+                        </button>
+                        <mat-form-field appearance="outline" class="message-field">
+                            <mat-label>Ask anything...</mat-label>
+                            <input matInput formControlName="message" placeholder="Type a message or upload an image..."
+                                autocomplete="off">
+                        </mat-form-field>
+                        <button mat-fab color="primary" type="submit" [disabled]="chatForm.invalid" class="send-button">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </form>
+                    <input type="file" #imageFileInput (change)="onImageFileSelected($event)" accept="image/*,.pdf,.csv,.xls,.xlsx,application/pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        style="display: none;">
+                </div>
+            </mat-card>
+        </div>
+    </main>
+</div>

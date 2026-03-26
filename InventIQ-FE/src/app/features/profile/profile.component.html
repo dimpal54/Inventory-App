@@ -1,0 +1,126 @@
+<div class="profile-page">
+  <section class="profile-hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Account Center</div>
+      <h1>{{ user()?.name || 'User' }}</h1>
+      <p>{{ permissionSummary() }}</p>
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" (click)="refreshProfile()">
+          <mat-icon>refresh</mat-icon>
+          Refresh Profile
+        </button>
+        <button mat-stroked-button (click)="navigate('/dashboard')">
+          <mat-icon>dashboard</mat-icon>
+          Go To Dashboard
+        </button>
+      </div>
+    </div>
+
+    <mat-card class="identity-card">
+      <div class="avatar-shell">
+        {{ (user()?.name || 'U').charAt(0) }}
+      </div>
+      <div class="identity-name">{{ user()?.name || 'User' }}</div>
+      <div class="identity-email">{{ user()?.email || '-' }}</div>
+      <div class="role-pill" [class.manage]="canManageInventory()">{{ displayRole() }}</div>
+    </mat-card>
+  </section>
+
+  <section class="profile-grid">
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Profile Details</mat-card-title>
+        <mat-card-subtitle>Your account information</mat-card-subtitle>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content>
+        <div class="detail-row">
+          <span class="label">Full Name</span>
+          <span class="value">{{ user()?.name || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Email Address</span>
+          <span class="value">{{ user()?.email || '-' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Role</span>
+          <span class="value">{{ displayRole() }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Access Level</span>
+          <span class="value">{{ canManageInventory() ? 'Manage Inventory' : 'View Only' }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Role Access</mat-card-title>
+        <mat-card-subtitle>What you can do in InventIQ</mat-card-subtitle>
+      </mat-card-header>
+      <mat-divider></mat-divider>
+      <mat-card-content class="access-list">
+        <div class="access-item" [class.active]="true">
+          <mat-icon>visibility</mat-icon>
+          <div>
+            <div class="access-title">View Inventory</div>
+            <div class="access-desc">See products, categories, suppliers, and reports.</div>
+          </div>
+        </div>
+        <div class="access-item" [class.active]="canManageInventory()">
+          <mat-icon>edit_square</mat-icon>
+          <div>
+            <div class="access-title">Create And Edit</div>
+            <div class="access-desc">Available only for Admin and Manager roles.</div>
+          </div>
+        </div>
+        <div class="access-item" [class.active]="canManageInventory()">
+          <mat-icon>smart_toy</mat-icon>
+          <div>
+            <div class="access-title">AI Write Actions</div>
+            <div class="access-desc">AI can create, update, and delete only for Admin and Manager.</div>
+          </div>
+        </div>
+        <div class="access-item" [class.active]="canManageInventory()">
+          <mat-icon>delete</mat-icon>
+          <div>
+            <div class="access-title">Delete Records</div>
+            <div class="access-desc">Restricted to inventory managers and admins.</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <section class="quick-actions-section">
+    <div class="section-heading">
+      <h2>Quick Actions</h2>
+      <p>Shortcuts based on your current role.</p>
+    </div>
+    <div class="quick-actions-grid">
+      @for (action of quickActions(); track action.label) {
+      <button mat-stroked-button class="quick-card" (click)="navigate(action.route)">
+        <mat-icon>{{ action.icon }}</mat-icon>
+        <span>{{ action.label }}</span>
+      </button>
+      }
+    </div>
+  </section>
+
+  <mat-card class="session-card">
+    <div class="session-copy">
+      <div class="session-title">Session Controls</div>
+      <div class="session-text">Keep your account secure and refresh your profile when role changes are applied.</div>
+    </div>
+    <div class="session-actions">
+      <button mat-stroked-button (click)="refreshProfile()">
+        <mat-icon>sync</mat-icon>
+        Refresh
+      </button>
+      <button mat-raised-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+  </mat-card>
+</div>

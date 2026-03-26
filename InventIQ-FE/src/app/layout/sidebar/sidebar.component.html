@@ -1,0 +1,27 @@
+<div class="sidebar-header">
+  <div class="logo-section">
+    <mat-icon class="logo-icon">inventory_2</mat-icon>
+    <span class="logo-text">InventIQ</span>
+  </div>
+  <div class="role-card">
+    <div class="role-avatar">{{ currentUserName.charAt(0) }}</div>
+    <div class="role-meta">
+      <div class="role-name">{{ currentUserName }}</div>
+      <div class="role-badge" [class.admin]="isAdmin()">{{ currentUserRole }}</div>
+    </div>
+  </div>
+</div>
+
+<mat-divider class="divider"></mat-divider>
+
+<mat-nav-list class="nav-list">
+  @for (item of visibleMenuItems; track item.label + item.route) {
+    <a mat-list-item
+       [routerLink]="item.route"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{exact: false}">
+      <mat-icon matListIcon>{{ item.icon }}</mat-icon>
+      <span matLine class="nav-text">{{ item.label }}</span>
+    </a>
+  }
+</mat-nav-list>

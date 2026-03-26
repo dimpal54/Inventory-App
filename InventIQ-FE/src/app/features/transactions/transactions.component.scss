@@ -1,0 +1,5 @@
+.transactions-page { padding: 20px; max-width: 1200px; margin: 0 auto; }
+.loading { display: flex; align-items: center; gap: 12px; padding: 18px; }
+.transactions-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.transactions-table th, .transactions-table td { padding: 10px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+.no-data { text-align: center; color: rgba(0,0,0,0.6); padding: 18px; }
