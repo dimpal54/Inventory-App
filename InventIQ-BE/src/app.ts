@@ -19,7 +19,7 @@ const frontendDistPath = path.resolve(
     process.cwd(),
     '../InventIQ-FE/dist/InventIQ/browser'
 );
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
+const allowedOrigins = (process.env.CORS_ORIGIN || 'https://inventory-app-h3mi.onrender.com/' || 'http://localhost:4200')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
